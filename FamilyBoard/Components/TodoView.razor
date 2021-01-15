@@ -1,0 +1,27 @@
+﻿@namespace FamilyBoard.Components
+@inject ITodoViewModel viewModel
+
+<div class="todo-wrapper">
+    <h3>@viewModel.Title</h3>
+
+    @if (viewModel.Items is null || viewModel.Items?.Count() == 0)
+    {
+        <p>No items</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (TodoTask item in viewModel.Items)
+            {
+                <li>@item.Title</li>
+            }
+        </ul>
+    }
+</div>
+
+@code {      
+    protected override async Task OnInitializedAsync()
+    {
+        await viewModel.InitAsync(StateHasChanged);
+    }
+}

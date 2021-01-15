@@ -1,0 +1,144 @@
+@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 100vh;
+    background-color: #181818;
+    color: #969696;
+}
+
+.grid-main-wrapper {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-gap: 5px;
+    grid-template-columns: auto;
+    grid-template-rows: 30px auto;
+}
+
+.grid-header {
+    display: grid;
+    text-align: center;
+    padding: 5px;
+    margin: 5px;
+}
+
+.grid-body {
+    display: grid;
+    grid-template-columns: 70% auto;
+}
+
+.grid-cell {
+    display: grid;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    background-color: #1E1E1E;
+}
+
+.grid-login {
+    position: absolute;
+}
+
+.calendar-wrapper {
+    display: grid;
+    grid-gap: 5px;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 50px 40px auto;
+}
+
+.calendar-title {
+    display: grid;
+    grid-column-start: span 7;
+    padding: 0px 5px;
+    font-weight: 500;
+    font-size: 2rem;
+}
+
+.calendar-cell-header {
+    display: grid;
+    border-radius: 5px;
+    padding: 7px 5px 5px 5px;
+    background-color: #2D2D2D;
+    text-align: center;
+    font-weight: 600;
+    font-size: 115%;
+}
+
+.calendar-cell {
+    display: grid;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #323233;
+}
+
+.calendar-cell-primary {
+    display: grid;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #323233;
+    border: 1px solid #CCCCCC;
+}
+
+.calendar-cell-secondary {
+    display: grid;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #252526;
+}
+
+.calendar-cell-inner {
+    position: relative;
+}
+
+.calendar-sub-cell-day {
+    padding: 5px;
+}
+
+.calendar-cell-event {
+    border-radius: 2px;
+    padding: 2px;
+    margin: 2px 0px;
+    /*background-color: #2C94FF;*/
+    color: #1E1E1E;
+    font-size: 80%;
+}
+
+.todo-wrapper {
+    display: grid;
+    padding: 10px;
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px auto;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Error.cshtml */
+.content {
+    padding-top: 1.1rem;
+}
+
+/* _Host.cshtml */
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
