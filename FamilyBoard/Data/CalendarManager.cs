@@ -57,11 +57,17 @@ namespace FamilyBoard.Data
                     new QueryOption("endDateTime", end)
                 };
 
-                var calendarView = await _graphServiceClient.Me.Calendars[_cachedCalendarId].CalendarView
+                ICalendarCalendarViewCollectionPage page = await _graphServiceClient.Me.Calendars[_cachedCalendarId].CalendarView
                     .Request(queryOptions)
                     .GetAsync(cancellationToken);
+                List<Event> events = page.ToList();
 
-                List<Event> events = calendarView.ToList();
+                // Query the rest of the pages
+                while (page.NextPageRequest is not null)
+                {
+                    page = await page.NextPageRequest.GetAsync(cancellationToken);
+                    events.AddRange(page.ToList());
+                }
 
                 _logger.LogInformation("{this} success, {eventCount} events for {month}.",
                     nameof(GetMonthsEventsAsync),
