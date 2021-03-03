@@ -55,7 +55,7 @@ namespace FamilyBoard.ViewModels
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(120000, cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(_options.UpdateFrequency), cancellationToken);
                 await UpdateGrid(cancellationToken);
                 
                 _stateChanged?.Invoke();

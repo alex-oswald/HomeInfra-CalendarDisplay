@@ -54,13 +54,15 @@ namespace FamilyBoard.ViewModels
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(120000, cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(_options.UpdateFrequency), cancellationToken);
+
                 var keys = Lists.Keys;
                 // Our grid is only for 4 lists
                 foreach (var key in keys.Take(4))
                 {
                     Lists[key] = await _todoService.GetTasksByListNameAsync(key);
                 }
+
                 _stateChanged?.Invoke();
             }
         }
