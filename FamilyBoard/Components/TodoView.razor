@@ -2,21 +2,30 @@
 @inject ITodoViewModel viewModel
 
 <div class="todo-wrapper">
-    <h3>@viewModel.Title</h3>
 
-    @if (viewModel.Items is null || viewModel.Items?.Count() == 0)
+    @foreach (var todoList in viewModel.Lists)
     {
-        <p>No items</p>
+        <div class="todo-list">
+            <div class="todo-list-inner">
+                <h4>@todoList.Key</h4>
+
+                @if (todoList.Value is null || todoList.Value?.Count() == 0)
+                {
+                    <p>No items</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (TodoTask item in todoList.Value)
+                        {
+                            <li>@item.Title</li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
     }
-    else
-    {
-        <ul>
-            @foreach (TodoTask item in viewModel.Items)
-            {
-                <li>@item.Title</li>
-            }
-        </ul>
-    }
+
 </div>
 
 @code {      

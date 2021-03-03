@@ -62,6 +62,7 @@ namespace FamilyBoard
             services.AddScoped<ITodoViewModel, TodoViewModel>();
 
             services.Configure<CalendarOptions>(Configuration.GetSection("CalendarOptions"));
+            services.Configure<TodoListOptions>(Configuration.GetSection("TodoListOptions"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

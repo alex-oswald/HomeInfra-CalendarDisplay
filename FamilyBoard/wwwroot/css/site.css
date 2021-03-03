@@ -106,9 +106,20 @@ html, body {
 
 .todo-wrapper {
     display: grid;
-    padding: 10px;
-    grid-template-columns: 1fr;
-    grid-template-rows: 50px auto;
+    grid-gap: 5px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.todo-list {
+    display: grid;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #323233;
+}
+
+.todo-list-inner {
+    position: relative;
 }
 
 .truncate {
