@@ -9,7 +9,7 @@ namespace FamilyBoard.ViewModels
 {
     public class EventViewModel
     {
-        public EventViewModel(Event e, string backgroundColor)
+        public EventViewModel(Event e, string backgroundColor, string textColor)
         {
             // All day events dont need the timezone adjustment
             Subject = e.Subject;
@@ -22,6 +22,7 @@ namespace FamilyBoard.ViewModels
             AllDay = e.IsAllDay ?? false;
             Recurring = e.Recurrence is not null ? true : false;
             BackgroundColor = backgroundColor;
+            TextColor = textColor;
         }
 
         public EventViewModel(EventViewModel vm)
@@ -32,10 +33,17 @@ namespace FamilyBoard.ViewModels
             AllDay = vm.AllDay;
             Recurring = vm.Recurring;
             BackgroundColor = vm.BackgroundColor;
+            TextColor = vm.TextColor;
         }
 
         internal EventViewModel(
-            string subject, DateTime start, DateTime end, bool allDay, bool recurring, string backgroundColor)
+            string subject,
+            DateTime start,
+            DateTime end,
+            bool allDay,
+            bool recurring,
+            string backgroundColor,
+            string textColor)
         {
             Subject = subject;
             Start = start;
@@ -43,6 +51,7 @@ namespace FamilyBoard.ViewModels
             AllDay = allDay;
             Recurring = recurring;
             BackgroundColor = backgroundColor;
+            TextColor = textColor;
         }
 
         public string Subject { get; }
@@ -56,6 +65,8 @@ namespace FamilyBoard.ViewModels
         public bool Recurring { get; }
 
         public string BackgroundColor { get; }
+
+        public string TextColor { get; }
 
         public EventViewModel Clone() => new EventViewModel(this);
 
@@ -83,8 +94,8 @@ namespace FamilyBoard.ViewModels
 
             for (int i = 1; i < days; i++)
             {
-                EventViewModel duplicate = new EventViewModel(
-                    vm.Subject, vm.Start.AddDays(i), vm.End, vm.AllDay, vm.Recurring, vm.BackgroundColor);
+                EventViewModel duplicate = new EventViewModel(vm.Subject, vm.Start.AddDays(i), vm.End,
+                    vm.AllDay, vm.Recurring, vm.BackgroundColor, vm.TextColor);
                 list.Items.Add(duplicate);
             }
 

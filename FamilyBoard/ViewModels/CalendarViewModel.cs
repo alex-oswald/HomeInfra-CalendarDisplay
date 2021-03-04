@@ -69,7 +69,7 @@ namespace FamilyBoard.ViewModels
             foreach (var calendar in _options.Calendars)
             {
                 var events = (await _calendarService.GetMonthsEventsAsync(calendar.Name, CurrentDateTime, cancellationToken))
-                    .Select(e => new EventViewModel(e, calendar.Color).ExpandMultiDayEvent().Items)
+                    .Select(e => new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor).ExpandMultiDayEvent().Items)
                     .SelectMany(e => e) // Flatten
                     .ToList();
                 Events.AddRange(events);

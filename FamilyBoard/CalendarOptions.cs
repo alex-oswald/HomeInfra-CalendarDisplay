@@ -12,7 +12,9 @@ namespace FamilyBoard
         {
             public string Name { get; set; }
 
-            public string Color { get; set; }
+            public string BackgroundColor { get; set; }
+
+            public string TextColor { get; set; }
         }
     }
 }
