@@ -17,7 +17,6 @@ namespace FamilyBoard.Data
     public class CalendarManager : ICalendarManager
     {
         private List<Calendar> _cachedCalendars = null;
-        private string _cachedCalendarId;
         private readonly ILogger<CalendarManager> _logger;
         private readonly GraphServiceClient _graphServiceClient;
 
@@ -30,21 +29,27 @@ namespace FamilyBoard.Data
         }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
+        public async Task<string> GetCalendarIdAsync(string calendarName, CancellationToken cancellationToken = default)
+        {
+            // Fetch a list of calendars
+            if (_cachedCalendars is null)
+            {
+                _cachedCalendars = (await _graphServiceClient.Me.Calendars
+                    .Request()
+                    .GetAsync(cancellationToken)).ToList();
+                _logger.LogInformation("Calendar cache was empty, fetched {count} calendars", _cachedCalendars.Count());
+            }
+
+            // Return the calendar id
+            return _cachedCalendars.Where(o => o.Name == calendarName).Single().Id;
+        }
+
+        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<List<Event>> GetMonthsEventsAsync(string calendarName, DateTime date, CancellationToken cancellationToken = default)
         {
             try
             {
-                // Fetch a list of calendars
-                if (_cachedCalendars is null)
-                {
-                    _cachedCalendars = (await _graphServiceClient.Me.Calendars
-                        .Request()
-                        .GetAsync(cancellationToken)).ToList();
-                    _logger.LogInformation("Calendar cache was empty, fetched {count} calendars", _cachedCalendars.Count());
-                }
-
-                // Get the calendar id
-                _cachedCalendarId = _cachedCalendars.Where(o => o.Name == calendarName).Single().Id;
+                var calendarId = await GetCalendarIdAsync(calendarName, cancellationToken);
 
                 // Create the DateTime using local time, or system time (from the Raspberry Pi, or your dev machine)
                 // This means the date string will include the offset and the search query will be correct for the local timezone
@@ -57,7 +62,7 @@ namespace FamilyBoard.Data
                     new QueryOption("endDateTime", end)
                 };
 
-                ICalendarCalendarViewCollectionPage page = await _graphServiceClient.Me.Calendars[_cachedCalendarId].CalendarView
+                ICalendarCalendarViewCollectionPage page = await _graphServiceClient.Me.Calendars[calendarId].CalendarView
                     .Request(queryOptions)
                     .GetAsync(cancellationToken);
                 List<Event> events = page.ToList();

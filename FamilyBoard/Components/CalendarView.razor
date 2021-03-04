@@ -6,7 +6,7 @@
 
     @if (viewModel.Grid is null)
     {
-        <div class="calendar-cell"><em>Loading grid...</em></div>
+        <div class="calendar-cell"><em>Loading calendar...</em></div>
     }
     else
     {
@@ -27,19 +27,21 @@
                                 : day.Day.Month == viewModel.CurrentDateTime.Month
                                     ? "calendar-cell"
                                     : "calendar-cell-secondary")">
+
                     <div class="calendar-cell-inner">
                         <span class="calendar-sub-cell-day text-sm-left">@day.Day.Day</span>
                         @foreach (var e in day.Events.OrderByDescending(e => e.AllDay).ThenBy(e => e.Start))
                         {
-                        <div class="calendar-cell-event truncate" style="background-color: @(e.BackgroundColor); color: @(e.TextColor);">
-                            @if (e.Recurring)
-                            {
-                                <span class="oi oi-timer"></span>
-                            }
-                            @e.ToString()
-                        </div>
+                            <div class="calendar-cell-event truncate" style="background-color: @(e.BackgroundColor); color: @(e.TextColor);">
+                                @if (e.Recurring)
+                                {
+                                    <span class="oi oi-timer"></span>
+                                }
+                                @e.ToString()
+                            </div>
                         }
                     </div>
+
                 </div>
             }
         }

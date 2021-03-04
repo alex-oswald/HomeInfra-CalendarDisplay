@@ -22,16 +22,16 @@ namespace FamilyBoard.ViewModels
     {
         private static readonly string _listName = "Family To Do";
         private readonly TodoListOptions _options;
-        private readonly ITodoManager _todoService;
+        private readonly ITodoManager _todoManager;
         private CancellationTokenSource _cancellationTokenSource;
         private Action _stateChanged;
 
         public TodoViewModel(
             IOptions<TodoListOptions> options,
-            ITodoManager todoService)
+            ITodoManager todoManager)
         {
             _options = options.Value;
-            _todoService = todoService;
+            _todoManager = todoManager;
         }
 
         public string Title { get; private set; }
@@ -44,7 +44,7 @@ namespace FamilyBoard.ViewModels
             Title = _listName;
             foreach (var list in _options.TodoLists)
             {
-                Lists.Add(list.Name, await _todoService.GetTasksByListNameAsync(list.Name));
+                Lists.Add(list.Name, await _todoManager.GetTasksByListNameAsync(list.Name));
             }
             _cancellationTokenSource = new CancellationTokenSource();
             _ = PollData(_cancellationTokenSource.Token);
@@ -60,7 +60,7 @@ namespace FamilyBoard.ViewModels
                 // Our grid is only for 4 lists
                 foreach (var key in keys.Take(4))
                 {
-                    Lists[key] = await _todoService.GetTasksByListNameAsync(key);
+                    Lists[key] = await _todoManager.GetTasksByListNameAsync(key);
                 }
 
                 _stateChanged?.Invoke();

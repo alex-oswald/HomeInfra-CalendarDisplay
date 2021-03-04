@@ -23,16 +23,16 @@ namespace FamilyBoard.ViewModels
     public class CalendarViewModel : ICalendarViewModel, IDisposable
     {
         private readonly CalendarOptions _options;
-        private readonly ICalendarManager _calendarService;
+        private readonly ICalendarManager _calendarManager;
         private CancellationTokenSource _cancellationTokenSource;
         private Action _stateChanged;
 
         public CalendarViewModel(
             IOptions<CalendarOptions> options,
-            ICalendarManager calendarService)
+            ICalendarManager calendarManager)
         {
             _options = options.Value;
-            _calendarService = calendarService;
+            _calendarManager = calendarManager;
         }
 
         public List<EventViewModel> Events { get; private set; } = new();
@@ -68,7 +68,7 @@ namespace FamilyBoard.ViewModels
             Events = new();
             foreach (var calendar in _options.Calendars)
             {
-                var events = (await _calendarService.GetMonthsEventsAsync(calendar.Name, CurrentDateTime, cancellationToken))
+                var events = (await _calendarManager.GetMonthsEventsAsync(calendar.Name, CurrentDateTime, cancellationToken))
                     .Select(e => new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor).ExpandMultiDayEvent().Items)
                     .SelectMany(e => e) // Flatten
                     .ToList();
