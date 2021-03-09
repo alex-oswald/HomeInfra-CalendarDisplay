@@ -11,8 +11,6 @@ namespace FamilyBoard.ViewModels
 {
     public interface ITodoViewModel
     {
-        string Title { get; }
-
         Dictionary<string, List<TodoTask>> Lists { get; }
 
         Task InitAsync(Action stateChanged);
@@ -20,7 +18,6 @@ namespace FamilyBoard.ViewModels
 
     public class TodoViewModel : ITodoViewModel, IDisposable
     {
-        private static readonly string _listName = "Family To Do";
         private readonly TodoListOptions _options;
         private readonly ITodoManager _todoManager;
         private CancellationTokenSource _cancellationTokenSource;
@@ -34,14 +31,11 @@ namespace FamilyBoard.ViewModels
             _todoManager = todoManager;
         }
 
-        public string Title { get; private set; }
-
         public Dictionary<string, List<TodoTask>> Lists { get; private set; } = new();
 
         public async Task InitAsync(Action stateChanged)
         {
             _stateChanged = stateChanged;
-            Title = _listName;
             foreach (var list in _options.TodoLists)
             {
                 Lists.Add(list.Name, await _todoManager.GetTasksByListNameAsync(list.Name));
