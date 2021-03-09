@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FamilyBoard
+namespace FamilyBoard.Options
 {
     public class TodoListOptions
     {

@@ -1,5 +1,6 @@
 ﻿using FamilyBoard.Data;
 using FamilyBoard.Models;
+using FamilyBoard.Options;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
