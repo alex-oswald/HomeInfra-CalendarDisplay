@@ -12,15 +12,23 @@ html, body {
     width: 100%;
     display: grid;
     grid-gap: 5px;
-    grid-template-columns: auto;
-    grid-template-rows: 30px auto;
+    grid-template-rows: 50px auto;
 }
 
 .grid-header {
     display: grid;
-    text-align: center;
+/*    text-align: center;
     padding: 5px;
-    margin: 5px;
+    margin: 5px;*/
+    grid-template-columns: 500px auto;
+}
+
+.grid-header-cell {
+    display: grid;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 10px 0px 10px;
+    background-color: #1E1E1E;
 }
 
 .grid-body {
@@ -36,8 +44,9 @@ html, body {
     background-color: #1E1E1E;
 }
 
-.grid-login {
-    position: absolute;
+.countdown-wrapper {
+    display: grid;
+    font-weight: bold;
 }
 
 .calendar-wrapper {

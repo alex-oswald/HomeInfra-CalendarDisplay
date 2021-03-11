@@ -1,46 +1,43 @@
 ﻿using FamilyBoard.Data;
 using FamilyBoard.Options;
 using Microsoft.Extensions.Options;
-using Microsoft.Graph;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace FamilyBoard.ViewModels
 {
-    public interface ITodoViewModel
+    public interface ICountdownViewModel
     {
-        Dictionary<string, List<TodoTask>> Lists { get; }
+        CountdownEventViewModel Event { get; }
 
         Task InitAsync(Action stateChanged);
     }
 
-    public class TodoViewModel : ITodoViewModel, IDisposable
+    public class CountdownViewModel : ICountdownViewModel, IDisposable
     {
-        private readonly TodoListOptions _options;
-        private readonly ITodoManager _todoManager;
+        private readonly CountdownOptions _options;
+        private readonly ICalendarManager _calendarManager;
         private CancellationTokenSource _cancellationTokenSource;
         private Action _stateChanged;
 
-        public TodoViewModel(
-            IOptions<TodoListOptions> options,
-            ITodoManager todoManager)
+        public CountdownViewModel(
+            IOptions<CountdownOptions> options,
+            ICalendarManager calendarManager)
         {
             _options = options.Value;
-            _todoManager = todoManager;
+            _calendarManager = calendarManager;
         }
 
-        public Dictionary<string, List<TodoTask>> Lists { get; private set; } = new();
+        public CountdownEventViewModel Event { get; private set; }
 
         public async Task InitAsync(Action stateChanged)
         {
             _stateChanged = stateChanged;
-            foreach (var list in _options.TodoLists)
-            {
-                Lists.Add(list.Name, await _todoManager.GetTasksByListNameAsync(list.Name));
-            }
+
+            await UpdateGrid();
+
             _cancellationTokenSource = new CancellationTokenSource();
             _ = PollData(_cancellationTokenSource.Token);
         }
@@ -50,16 +47,20 @@ namespace FamilyBoard.ViewModels
             while (!cancellationToken.IsCancellationRequested)
             {
                 await Task.Delay(TimeSpan.FromSeconds(_options.UpdateFrequency), cancellationToken);
-
-                var keys = Lists.Keys;
-                // Our grid is only for 4 lists
-                foreach (var key in keys.Take(4))
-                {
-                    Lists[key] = await _todoManager.GetTasksByListNameAsync(key);
-                }
+                await UpdateGrid(cancellationToken);
 
                 _stateChanged?.Invoke();
             }
+        }
+
+        public async Task UpdateGrid(CancellationToken cancellationToken = default)
+        {
+            var start = DateTime.Now;
+            var events = await _calendarManager.GetEventsBetweenDatesAsync(
+                _options.CalendarName, start, start.AddMonths(_options.LookupMonths), cancellationToken);
+            Event = events.Select(e => new CountdownEventViewModel(e))
+                .OrderBy(e => e.Start)
+                .FirstOrDefault();
         }
 
         public void Dispose()

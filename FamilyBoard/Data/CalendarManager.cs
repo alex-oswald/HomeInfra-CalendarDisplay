@@ -11,6 +11,8 @@ namespace FamilyBoard.Data
 {
     public interface ICalendarManager
     {
+        Task<List<Event>> GetEventsBetweenDatesAsync(string calendarName, DateTime start, DateTime end, CancellationToken cancellationToken = default);
+
         Task<List<Event>> GetMonthsEventsAsync(string calendarName, DateTime date, CancellationToken cancellationToken = default);
     }
 
@@ -45,7 +47,8 @@ namespace FamilyBoard.Data
         }
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
-        public async Task<List<Event>> GetMonthsEventsAsync(string calendarName, DateTime date, CancellationToken cancellationToken = default)
+        public async Task<List<Event>> GetEventsBetweenDatesAsync(
+            string calendarName, DateTime start, DateTime end, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -53,13 +56,13 @@ namespace FamilyBoard.Data
 
                 // Create the DateTime using local time, or system time (from the Raspberry Pi, or your dev machine)
                 // This means the date string will include the offset and the search query will be correct for the local timezone
-                var start = new DateTime(date.Year, date.Month, 1, 0, 0, 0, DateTimeKind.Local).ToString("O");
-                var end = new DateTime(date.Year, date.Month + 1, 1, 0, 0, 0, DateTimeKind.Local).AddTicks(-1).ToString("O");
+                var startDate = new DateTime(start.Year, start.Month, start.Day, 0, 0, 0, DateTimeKind.Local).ToString("O");
+                var endDate = new DateTime(end.Year, end.Month, end.Day, 0, 0, 0, DateTimeKind.Local).AddDays(1).AddTicks(-1).ToString("O");
 
                 var queryOptions = new List<QueryOption>()
                 {
-                    new QueryOption("startDateTime", start),
-                    new QueryOption("endDateTime", end)
+                    new QueryOption("startDateTime", startDate),
+                    new QueryOption("endDateTime", endDate)
                 };
 
                 ICalendarCalendarViewCollectionPage page = await _graphServiceClient.Me.Calendars[calendarId].CalendarView
@@ -74,10 +77,9 @@ namespace FamilyBoard.Data
                     events.AddRange(page.ToList());
                 }
 
-                _logger.LogInformation("{this} success, {eventCount} events for {month}.",
+                _logger.LogInformation("{this} success, {eventCount} events found.",
                     nameof(GetMonthsEventsAsync),
-                    events.Count,
-                    date.ToMonthName());
+                    events.Count);
 
                 return events;
             }
@@ -86,6 +88,14 @@ namespace FamilyBoard.Data
                 _logger.LogCritical(ex, "{this} failed.", nameof(GetMonthsEventsAsync));
                 return new();
             }
+        }
+
+        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
+        public async Task<List<Event>> GetMonthsEventsAsync(string calendarName, DateTime date, CancellationToken cancellationToken = default)
+        {
+            var startDate = new DateTime(date.Year, date.Month, 1, 0, 0, 0, DateTimeKind.Local);
+            var endDate = startDate.AddMonths(1).AddTicks(-1);
+            return await GetEventsBetweenDatesAsync(calendarName, startDate, endDate, cancellationToken);
         }
     }
 }

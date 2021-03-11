@@ -1,0 +1,15 @@
+﻿@namespace FamilyBoard.Components
+@inject ICountdownViewModel viewModel
+
+<div class="countdown-wrapper">
+
+    @viewModel.Event?.ToString()
+
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await viewModel.InitAsync(StateHasChanged);
+    }
+}

@@ -1,4 +1,5 @@
 using FamilyBoard.Data;
+using FamilyBoard.Options;
 using FamilyBoard.ViewModels;
 using Microsoft.Extensions.Options;
 using Moq;

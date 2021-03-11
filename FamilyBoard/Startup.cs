@@ -61,9 +61,11 @@ namespace FamilyBoard
 
             services.AddScoped<ICalendarViewModel, CalendarViewModel>();
             services.AddScoped<ITodoViewModel, TodoViewModel>();
+            services.AddScoped<ICountdownViewModel, CountdownViewModel>();
 
             services.Configure<CalendarOptions>(Configuration.GetSection("CalendarOptions"));
             services.Configure<TodoListOptions>(Configuration.GetSection("TodoListOptions"));
+            services.Configure<CountdownOptions>(Configuration.GetSection("CountdownOptions"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
