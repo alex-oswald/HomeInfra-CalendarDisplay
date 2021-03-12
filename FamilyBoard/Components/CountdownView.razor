@@ -1,9 +1,12 @@
 ﻿@namespace FamilyBoard.Components
 @inject ICountdownViewModel viewModel
 
-<div class="countdown-wrapper">
+<div class="countdown-wrapper" style="grid-template-columns: repeat(@viewModel.Events.Count, 1fr)">
 
-    @viewModel.Event?.ToString()
+    @foreach (var ev in viewModel.Events)
+    {
+        <span style="padding-right: 20px; text-align: center;">@ev</span>
+    }
 
 </div>
 

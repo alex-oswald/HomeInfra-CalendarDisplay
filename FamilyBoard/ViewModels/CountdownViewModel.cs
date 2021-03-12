@@ -2,6 +2,7 @@
 using FamilyBoard.Options;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace FamilyBoard.ViewModels
 {
     public interface ICountdownViewModel
     {
-        CountdownEventViewModel Event { get; }
+        List<CountdownEventViewModel> Events { get; }
 
         Task InitAsync(Action stateChanged);
     }
@@ -30,7 +31,7 @@ namespace FamilyBoard.ViewModels
             _calendarManager = calendarManager;
         }
 
-        public CountdownEventViewModel Event { get; private set; }
+        public List<CountdownEventViewModel> Events { get; private set; } = new();
 
         public async Task InitAsync(Action stateChanged)
         {
@@ -58,9 +59,11 @@ namespace FamilyBoard.ViewModels
             var start = DateTime.Now;
             var events = await _calendarManager.GetEventsBetweenDatesAsync(
                 _options.CalendarName, start, start.AddMonths(_options.LookupMonths), cancellationToken);
-            Event = events.Select(e => new CountdownEventViewModel(e))
+
+            Events = events.Select(e => new CountdownEventViewModel(e))
                 .OrderBy(e => e.Start)
-                .FirstOrDefault();
+                .Take(_options.CountdownsCount)
+                .ToList();
         }
 
         public void Dispose()
