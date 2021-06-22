@@ -27,7 +27,7 @@ https://stackoverflow.com/questions/30985964/how-to-disable-sleeping-on-raspberr
 
 ## Secrets
 
-Create an `appsettings.secrets.json` file in the root of the `FamilyBoard` project. This file is in `.gitignore` so it won't be picked up by git.
+Create an `appsettings.secrets.json` file in the root of the `CalendarDisplay` project. This file is in `.gitignore` so it won't be picked up by git.
 
 Add the following contents to connect to Azure AD.
 
@@ -54,8 +54,8 @@ https://stackoverflow.com/questions/55485511/how-to-run-dotnet-dev-certs-https-t
 
 ## Copy files to Raspberry Pi
 
-Create a `FamilyBoard` folder and secure copy to the pi.
+Create a `CalendarDisplay` folder and secure copy to the pi.
 
 ```bash
-scp -r C:\{project-root}\bin\Release\net5.0\publish\* pi@rasbpian:/home/pi/FamilyBoard
+scp -r C:\{project-root}\bin\Release\net5.0\publish\* pi@rasbpian:/home/pi/CalendarDisplay
 ```

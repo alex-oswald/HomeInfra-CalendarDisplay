@@ -1,0 +1,18 @@
+﻿@namespace CalendarDisplay.Components
+@inject ICountdownViewModel viewModel
+
+<div class="countdown-wrapper" style="grid-template-columns: repeat(@viewModel.Events.Count, 1fr)">
+
+    @foreach (var ev in viewModel.Events)
+    {
+        <span style="padding-right: 20px; text-align: center;">@ev</span>
+    }
+
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await viewModel.InitAsync(StateHasChanged);
+    }
+}
