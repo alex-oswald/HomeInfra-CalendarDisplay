@@ -1,0 +1,22 @@
+﻿@namespace CalendarDisplay.Shared
+@inherits LayoutComponentBase
+
+<div class="grid-main-wrapper">
+
+    <div class="grid-header">
+
+        <div class="grid-header-cell" style="margin-right: 5px;">
+            <LoginDisplay />
+        </div>
+
+        <div class="grid-header-cell" style="margin-left: 5px;">
+            <CountdownView />
+        </div>
+
+    </div>
+
+    <div class="grid-body">
+        @Body
+    </div>
+
+</div>
