@@ -56,8 +56,10 @@ namespace FamilyBoard.Data
 
                 // Create the DateTime using local time, or system time (from the Raspberry Pi, or your dev machine)
                 // This means the date string will include the offset and the search query will be correct for the local timezone
-                var startDate = new DateTime(start.Year, start.Month, start.Day, 0, 0, 0, DateTimeKind.Local).ToString("O");
-                var endDate = new DateTime(end.Year, end.Month, end.Day, 0, 0, 0, DateTimeKind.Local).AddDays(1).AddTicks(-1).ToString("O");
+                var sd = new DateTime(start.Year, start.Month, start.Day, 0, 0, 0, DateTimeKind.Local);
+                var startDate = TimeZoneInfo.ConvertTimeToUtc(sd).ToString("o");
+                var ed = new DateTime(end.Year, end.Month, end.Day, 0, 0, 0, DateTimeKind.Local).AddDays(1).AddTicks(-1);
+                var endDate = TimeZoneInfo.ConvertTimeToUtc(ed).ToString("o");
 
                 var queryOptions = new List<QueryOption>()
                 {
