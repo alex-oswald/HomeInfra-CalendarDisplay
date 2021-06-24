@@ -1,4 +1,4 @@
-# Family Board
+# Calendar Display
 
 Digital display software that runs on a Raspberry Pi and displays Microsoft Graph calendar and todo list data.
 
@@ -35,7 +35,6 @@ Add the following contents to connect to Azure AD.
 {
   "AzureAd": {
     "Instance": "",
-    "Domain": "",
     "TenantId": "",
     "ClientId": "",
     "CallbackPath": "",
