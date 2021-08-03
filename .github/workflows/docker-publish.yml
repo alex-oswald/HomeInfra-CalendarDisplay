@@ -62,4 +62,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./CalendarDisplay/Dockerfile
-          platforms: linux/arm64
+          platforms: linux/arm64,linux/amd64
