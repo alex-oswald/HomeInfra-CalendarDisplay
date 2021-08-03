@@ -25,6 +25,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+        
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
         
