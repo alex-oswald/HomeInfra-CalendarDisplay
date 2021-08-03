@@ -24,6 +24,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
@@ -53,4 +59,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./CalendarDisplay/Dockerfile
-          platforms: linux/arm/v7
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
