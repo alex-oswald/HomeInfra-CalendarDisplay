@@ -1,0 +1,22 @@
+﻿version: '3.8'
+
+services:
+  calendardisplay:
+    build:
+      context: '.'
+      dockerfile : 'CalendarDisplay/Dockerfile'
+    container_name: 'calendar_display'
+    restart: 'unless-stopped'
+    ports:
+      - '5000:443'
+    volumes:
+      - './configuration/:/configuration/' # cert location
+    environment:
+      - 'AzureAd__Instance=https://login.microsoftonline.com/'
+      - 'AzureAd__TenantId=common'
+      - 'AzureAd__ClientId=${AZUREAD_CLIENTID}'
+      - 'AzureAd__ClientSecret=${AZUREAD_CLIENTSECRET}'
+      - 'ASPNETCORE_ENVIRONMENT=Production'
+      - 'ASPNETCORE_URLS=https://+:443'
+      - 'ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}'
+      - 'ASPNETCORE_Kestrel__Certificates__Default__Path=${CERT_PATH}'
