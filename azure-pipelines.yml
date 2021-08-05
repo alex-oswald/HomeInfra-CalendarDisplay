@@ -23,7 +23,7 @@ stages:
     - task: Docker@2
       displayName: Login
       inputs:
-        containerRegistry: 'dockerregistry-alexoswald'
+        containerRegistry: 'docker-registry-alexoswald'
         command: 'login'
     - task: CmdLine@2
       displayName: Build
