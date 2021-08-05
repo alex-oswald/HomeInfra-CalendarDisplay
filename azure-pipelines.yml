@@ -36,5 +36,4 @@ stages:
             -t calendardisplay:$(build.buildNumber) \
             -t calendardisplay:latest \
             --push \
-            . \
             CalendarDisplay/Dockerfile
