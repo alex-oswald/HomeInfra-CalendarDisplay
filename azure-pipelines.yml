@@ -32,7 +32,7 @@ stages:
           docker run --privileged --rm tonistiigi/binfmt --install arm64
           docker run --privileged --rm tonistiigi/binfmt
           docker buildx create --use
-          docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 \
+          docker buildx build --platform linux/amd64,linux/arm64 \
             -t calendardisplay:$(build.buildNumber) \
             -t calendardisplay:latest \
             --push \
