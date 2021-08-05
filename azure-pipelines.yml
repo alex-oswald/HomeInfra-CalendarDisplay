@@ -23,7 +23,7 @@ stages:
     - task: Docker@2
       displayName: Login
       inputs:
-        containerRegistry: 'homeinfra-calendardisplay'
+        containerRegistry: 'dockerregistry-alexoswald'
         command: 'login'
     - task: CmdLine@2
       displayName: Build
