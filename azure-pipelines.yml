@@ -36,5 +36,5 @@ stages:
             -t calendardisplay:$(build.buildNumber) \
             -t calendardisplay:latest \
             --push \
-            .
-        workingDirectory: $(Build.SourcesDirectory)/CalendarDisplay
+            /CalendarDisplay/Dockerfile
+        workingDirectory: $(Build.SourcesDirectory)
