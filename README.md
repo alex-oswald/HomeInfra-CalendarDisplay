@@ -1,6 +1,6 @@
 # Calendar Display
 
-Digital display software that displays Microsoft Graph calendar and Todo list data to the browser using Blazor Server.
+Docker container that runs a ASP.NET Core hosted Blazor Server app that displays Microsoft Graph calendar and Todo list data.
 
 
 ## Disable screen timeout
