@@ -12,7 +12,7 @@ namespace CalendarDisplay.ViewModels
 {
     public interface ICalendarViewModel
     {
-        List<EventViewModel> Events { get; }
+        EventViewModelList Events { get; }
 
         DateTime CurrentDateTime { get; }
 
@@ -36,7 +36,7 @@ namespace CalendarDisplay.ViewModels
             _calendarManager = calendarManager;
         }
 
-        public List<EventViewModel> Events { get; private set; } = new();
+        public EventViewModelList Events { get; private set; } = new();
 
         public DateTime CurrentDateTime { get; private set; }
 
@@ -70,9 +70,9 @@ namespace CalendarDisplay.ViewModels
             foreach (var calendar in _options.Calendars)
             {
                 var events = (await _calendarManager.GetMonthsEventsAsync(calendar.Name, CurrentDateTime, cancellationToken))
-                    .Select(e => new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor).ExpandMultiDayEvent().Items)
-                    .SelectMany(e => e) // Flatten
-                    .ToList();
+                    .Select(e => new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor))
+                    .ToEventViewModelList()
+                    .ExpandMultiDayEvent();
                 Events.AddRange(events);
             }
 
@@ -85,7 +85,7 @@ namespace CalendarDisplay.ViewModels
             _cancellationTokenSource.Dispose();
         }
 
-        public CalendarGrid CreateCalendar(DateTime date, List<EventViewModel> eventViewModels)
+        public CalendarGrid CreateCalendar(DateTime date, EventViewModelList eventViewModels)
         {
             // Build the calendar. We have 7 columns in the calendar and between 4-6 rows (2015-2)
             // depending on how many days there are in the month and what day of the week
@@ -96,21 +96,22 @@ namespace CalendarDisplay.ViewModels
 
             // We start with some empty days to represent the days at the end of the previous month
             var lastMonthsDays = Enumerable.Range(0, startingDayOfMonthDayOfWeek)
-                .Select(day => new CalendarDay(startingDayOfMonth.AddDays(-(1 + day)), new()))
+                .Select(day => new CalendarDay(startingDayOfMonth.AddDays(-(1 + day))))
                 .Reverse()
                 .ToList();
 
             // Start looping though each day of the month to fetch any events
             for (int day = 1; day <= daysInMonth; day++)
             {
-                var daysEvents = eventViewModels.Where(e => e.Start.Day == day).ToList();
-                lastMonthsDays.Add(new CalendarDay(new DateTime(date.Year, date.Month, day), daysEvents));
+                var thisDay = new DateTime(date.Year, date.Month, day);
+                var daysEvents = eventViewModels.Where(e => e.Start.Date == thisDay).ToList();
+                lastMonthsDays.Add(new CalendarDay(thisDay, daysEvents));
             }
 
             // Get the days left to add to fill up a full week at the end of the month
             var daysLeft = 7 - lastMonthsDays.Count() % 7;
             var nextMonthsDays = Enumerable.Range(1, daysLeft)
-                .Select(day => new CalendarDay(new DateTime(date.Year, date.Month + 1, day), new()))
+                .Select(day => new CalendarDay(new DateTime(date.Year, date.Month + 1, day)))
                 .ToList();
             lastMonthsDays.AddRange(nextMonthsDays);
 
