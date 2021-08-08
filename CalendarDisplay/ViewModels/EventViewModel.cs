@@ -77,28 +77,43 @@ namespace CalendarDisplay.ViewModels
         }
     }
 
-    public class EventViewModelList<TModel>
-        where TModel : EventViewModel
+    public class EventViewModelList : List<EventViewModel>
     {
-        public List<TModel> Items { get; set; } = new();
     }
 
     public static class EventViewModelExtensions
     {
-        public static EventViewModelList<EventViewModel> ExpandMultiDayEvent(this EventViewModel vm)
+        public static EventViewModelList ExpandMultiDayEvent(this EventViewModelList list)
         {
-            EventViewModelList<EventViewModel> list = new();
-
-            var days = vm.End.Subtract(vm.Start).Days;
-            list.Items.Add(vm);
-
-            for (int i = 1; i < days; i++)
+            EventViewModelList expandedList = new();
+            foreach (var item in list)
             {
-                EventViewModel duplicate = new EventViewModel(vm.Subject, vm.Start.AddDays(i), vm.End,
-                    vm.AllDay, vm.Recurring, vm.BackgroundColor, vm.TextColor);
-                list.Items.Add(duplicate);
-            }
+                //Add first event
+                expandedList.Add(item);
 
+                // If the actual dates are different, we have either an all day event, or a multi day event
+                if (item.Start.Date != item.End.Date &&
+                    item.Start.AddDays(1) != item.End) // All day events end on the next day, but at the same time as the start day
+                {
+                    var t = item.Start;
+                    while (t < item.End)
+                    {
+                        t = t.AddDays(1);
+                        if (t != item.End) // Only add if we aren't at the end
+                        {
+                            var dup = new EventViewModel(item.Subject, t, item.End, item.AllDay, item.Recurring, item.BackgroundColor, item.TextColor);
+                            expandedList.Add(dup);
+                        }
+                    }
+                }
+            }
+            return expandedList;
+        }
+
+        public static EventViewModelList ToEventViewModelList(this IEnumerable<EventViewModel> enumerable)
+        {
+            EventViewModelList list = new();
+            list.AddRange(enumerable);
             return list;
         }
     }

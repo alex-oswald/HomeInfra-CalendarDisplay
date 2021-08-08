@@ -4,17 +4,23 @@ using System.Collections.Generic;
 
 namespace CalendarDisplay.Models
 {
-    public class CalendarDay
+    public record CalendarDay
     {
+        public CalendarDay(DateTime day)
+            : this(day, new())
+        {
+            Day = day;
+        }
+
         public CalendarDay(DateTime day, List<EventViewModel> events)
         {
             Day = day;
             Events = events;
         }
 
-        public DateTime Day { get; set; }
+        public DateTime Day { get; }
 
-        public List<EventViewModel> Events { get; set; } = new();
+        public List<EventViewModel> Events { get; }
     }
 
     public class CalendarWeek
