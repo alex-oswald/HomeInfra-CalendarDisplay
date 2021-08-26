@@ -4,6 +4,8 @@ namespace CalendarDisplay.Options
 {
     public class CalendarOptions
     {
+        public const string Section = "CalendarOptions";
+
         public List<Calendar> Calendars { get; set; }
 
         public int UpdateFrequency { get; set; } = 3_600;

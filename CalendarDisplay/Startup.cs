@@ -64,9 +64,9 @@ namespace CalendarDisplay
             services.AddScoped<ITodoViewModel, TodoViewModel>();
             services.AddScoped<ICountdownViewModel, CountdownViewModel>();
 
-            services.Configure<CalendarOptions>(Configuration.GetSection("CalendarOptions"));
-            services.Configure<TodoListOptions>(Configuration.GetSection("TodoListOptions"));
-            services.Configure<CountdownOptions>(Configuration.GetSection("CountdownOptions"));
+            services.Configure<CalendarOptions>(Configuration.GetSection(CalendarOptions.Section));
+            services.Configure<TodoListOptions>(Configuration.GetSection(TodoListOptions.Section));
+            services.Configure<CountdownOptions>(Configuration.GetSection(CountdownOptions.Section));
 
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-5.0
             services.Configure<ForwardedHeadersOptions>(options =>
