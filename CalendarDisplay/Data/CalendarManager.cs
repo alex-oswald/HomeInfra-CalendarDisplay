@@ -11,9 +11,7 @@ namespace CalendarDisplay.Data
 {
     public interface ICalendarManager
     {
-        Task<List<Event>> GetEventsBetweenDatesAsync(string calendarName, DateTime start, DateTime end, CancellationToken cancellationToken = default);
-
-        Task<List<Event>> GetMonthsEventsAsync(string calendarName, DateTime date, CancellationToken cancellationToken = default);
+        Task<List<Event>> GetEventsBetweenDatesAsync(string calendarName, DateTimeZone start, DateTimeZone end, CancellationToken cancellationToken = default);
     }
 
     public class CalendarManager : ICalendarManager
@@ -48,18 +46,16 @@ namespace CalendarDisplay.Data
 
         [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         public async Task<List<Event>> GetEventsBetweenDatesAsync(
-            string calendarName, DateTime start, DateTime end, CancellationToken cancellationToken = default)
+            string calendarName, DateTimeZone start, DateTimeZone end, CancellationToken cancellationToken = default)
         {
             try
             {
                 var calendarId = await GetCalendarIdAsync(calendarName, cancellationToken);
 
-                // Create the DateTime using local time, or system time (from the Raspberry Pi, or your dev machine)
-                // This means the date string will include the offset and the search query will be correct for the local timezone
-                var sd = new DateTime(start.Year, start.Month, start.Day, 0, 0, 0, DateTimeKind.Local);
-                var startDate = TimeZoneInfo.ConvertTimeToUtc(sd).ToString("o");
-                var ed = new DateTime(end.Year, end.Month, end.Day, 0, 0, 0, DateTimeKind.Local).AddDays(1).AddTicks(-1);
-                var endDate = TimeZoneInfo.ConvertTimeToUtc(ed).ToString("o");
+                var sd = new DateTime(start.UniversalTime.Year, start.UniversalTime.Month, start.UniversalTime.Day, 0, 0, 0, DateTimeKind.Utc);
+                var startDate = sd.ToString("o");
+                var ed = new DateTime(end.UniversalTime.Year, end.UniversalTime.Month, end.UniversalTime.Day, 0, 0, 0, DateTimeKind.Utc);
+                var endDate = ed.ToString("o");
 
                 var queryOptions = new List<QueryOption>()
                 {
@@ -80,24 +76,16 @@ namespace CalendarDisplay.Data
                 }
 
                 _logger.LogInformation("{this} success, {eventCount} events found.",
-                    nameof(GetMonthsEventsAsync),
+                    nameof(GetEventsBetweenDatesAsync),
                     events.Count);
 
                 return events;
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, "{this} failed.", nameof(GetMonthsEventsAsync));
+                _logger.LogCritical(ex, "{this} failed.", nameof(GetEventsBetweenDatesAsync));
                 return new();
             }
-        }
-
-        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
-        public async Task<List<Event>> GetMonthsEventsAsync(string calendarName, DateTime date, CancellationToken cancellationToken = default)
-        {
-            var startDate = new DateTime(date.Year, date.Month, 1, 0, 0, 0, DateTimeKind.Local);
-            var endDate = startDate.AddMonths(1).AddTicks(-1);
-            return await GetEventsBetweenDatesAsync(calendarName, startDate, endDate, cancellationToken);
         }
     }
 }

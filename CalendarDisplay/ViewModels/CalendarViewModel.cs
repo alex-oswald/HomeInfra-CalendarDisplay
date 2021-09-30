@@ -14,7 +14,7 @@ namespace CalendarDisplay.ViewModels
     {
         EventViewModelList Events { get; }
 
-        DateTime CurrentDateTime { get; }
+        DateTimeZone CurrentDateTime { get; }
 
         CalendarGrid Grid { get; }
 
@@ -24,21 +24,24 @@ namespace CalendarDisplay.ViewModels
     public class CalendarViewModel : ICalendarViewModel, IDisposable
     {
         private readonly CalendarOptions _options;
+        private readonly TimeZoneOptions _timezoneOptions;
         private readonly ICalendarManager _calendarManager;
         private CancellationTokenSource _cancellationTokenSource;
         private Action _stateChanged;
 
         public CalendarViewModel(
             IOptions<CalendarOptions> options,
+            IOptions<TimeZoneOptions> timezoneOptions,
             ICalendarManager calendarManager)
         {
             _options = options.Value;
+            _timezoneOptions = timezoneOptions.Value;
             _calendarManager = calendarManager;
         }
 
         public EventViewModelList Events { get; private set; } = new();
 
-        public DateTime CurrentDateTime { get; private set; }
+        public DateTimeZone CurrentDateTime { get; private set; }
 
         public CalendarGrid Grid { get; private set; }
 
@@ -65,12 +68,16 @@ namespace CalendarDisplay.ViewModels
 
         public async Task UpdateGrid(CancellationToken cancellationToken = default)
         {
-            CurrentDateTime = DateTime.Now;
+            var timezone = _timezoneOptions.FromTimeZoneOptions();
+            CurrentDateTime = DateTimeZone.UtcNow(timezone);
+            var start = DateTimeZone.FromTimeZone(CurrentDateTime.LocalTime.AddDays(-8), timezone);
+            var end = DateTimeZone.FromTimeZone(CurrentDateTime.LocalTime.AddDays(39), timezone);
+
             Events = new();
             foreach (var calendar in _options.Calendars)
             {
-                var events = (await _calendarManager.GetMonthsEventsAsync(calendar.Name, CurrentDateTime, cancellationToken))
-                    .Select(e => new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor))
+                var events = (await _calendarManager.GetEventsBetweenDatesAsync(calendar.Name, start, end, cancellationToken))
+                    .Select(e => new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor, _timezoneOptions))
                     .ToEventViewModelList()
                     .ExpandMultiDayEvent();
                 Events.AddRange(events);
@@ -85,14 +92,14 @@ namespace CalendarDisplay.ViewModels
             _cancellationTokenSource.Dispose();
         }
 
-        public CalendarGrid CreateCalendar(DateTime date, EventViewModelList eventViewModels)
+        public CalendarGrid CreateCalendar(DateTimeZone date, EventViewModelList eventViewModels)
         {
             // Build the calendar. We have 7 columns in the calendar and between 4-6 rows (2015-2)
             // depending on how many days there are in the month and what day of the week
             // the month starts on.
-            var startingDayOfMonth = new DateTime(date.Year, date.Month, 1);
+            var startingDayOfMonth = new DateTime(date.LocalTime.Year, date.LocalTime.Month, 1);
             var startingDayOfMonthDayOfWeek = (int)startingDayOfMonth.DayOfWeek;
-            var daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
+            var daysInMonth = DateTime.DaysInMonth(date.LocalTime.Year, date.LocalTime.Month);
 
             // We start with some empty days to represent the days at the end of the previous month
             var lastMonthsDays = Enumerable.Range(0, startingDayOfMonthDayOfWeek)
@@ -103,7 +110,7 @@ namespace CalendarDisplay.ViewModels
             // Start looping though each day of the month to fetch any events
             for (int day = 1; day <= daysInMonth; day++)
             {
-                var thisDay = new DateTime(date.Year, date.Month, day);
+                var thisDay = new DateTime(date.LocalTime.Year, date.LocalTime.Month, day);
                 var daysEvents = eventViewModels.Where(e => e.Start.Date == thisDay).ToList();
                 lastMonthsDays.Add(new CalendarDay(thisDay, daysEvents));
             }
@@ -111,7 +118,7 @@ namespace CalendarDisplay.ViewModels
             // Get the days left to add to fill up a full week at the end of the month
             var daysLeft = 7 - lastMonthsDays.Count() % 7;
             var nextMonthsDays = Enumerable.Range(1, daysLeft)
-                .Select(day => new CalendarDay(new DateTime(date.Year, date.Month + 1, day)))
+                .Select(day => new CalendarDay(new DateTime(date.LocalTime.Year, date.LocalTime.Month + 1, day)))
                 .ToList();
             lastMonthsDays.AddRange(nextMonthsDays);
 
