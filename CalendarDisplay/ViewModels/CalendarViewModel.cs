@@ -49,9 +49,12 @@ namespace CalendarDisplay.ViewModels
         {
             _stateChanged = stateChanged;
 
+            var timezone = _timezoneOptions.FromTimeZoneOptions();
+            CurrentDateTime = DateTimeZone.UtcNow(timezone);
             await UpdateGrid();
 
             _cancellationTokenSource = new CancellationTokenSource();
+            _ = Ticker(_cancellationTokenSource.Token);
             _ = PollData(_cancellationTokenSource.Token);
         }
 
@@ -66,10 +69,20 @@ namespace CalendarDisplay.ViewModels
             }
         }
 
+        public async Task Ticker(CancellationToken cancellationToken = default)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var timezone = _timezoneOptions.FromTimeZoneOptions();
+                CurrentDateTime = DateTimeZone.UtcNow(timezone);
+                _stateChanged?.Invoke();
+                await Task.Delay(1000, cancellationToken);
+            }
+        }
+
         public async Task UpdateGrid(CancellationToken cancellationToken = default)
         {
             var timezone = _timezoneOptions.FromTimeZoneOptions();
-            CurrentDateTime = DateTimeZone.UtcNow(timezone);
             var start = DateTimeZone.FromTimeZone(CurrentDateTime.LocalTime.AddDays(-8), timezone);
             var end = DateTimeZone.FromTimeZone(CurrentDateTime.LocalTime.AddDays(39), timezone);
 

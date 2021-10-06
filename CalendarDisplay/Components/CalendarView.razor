@@ -2,7 +2,7 @@
 @inject ICalendarViewModel viewModel
 
 <div class="calendar-wrapper">
-    <span class="calendar-title">@viewModel.CurrentDateTime.LocalTime.ToString("D")</span>
+    <span class="calendar-title">@viewModel.CurrentDateTime.LocalTime.ToString("dddd, MMMM d, yyyy - h:mm:ss tt - Hmm")</span>
 
     @if (viewModel.Grid is null)
     {
