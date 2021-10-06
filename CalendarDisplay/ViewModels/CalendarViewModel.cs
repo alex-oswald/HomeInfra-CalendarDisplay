@@ -83,8 +83,13 @@ namespace CalendarDisplay.ViewModels
         public async Task UpdateGrid(CancellationToken cancellationToken = default)
         {
             var timezone = _timezoneOptions.FromTimeZoneOptions();
-            var start = DateTimeZone.FromTimeZone(CurrentDateTime.LocalTime.AddDays(-8), timezone);
-            var end = DateTimeZone.FromTimeZone(CurrentDateTime.LocalTime.AddDays(39), timezone);
+            var start = DateTimeZone.FromTimeZone(
+                new DateTime(CurrentDateTime.LocalTime.Year, CurrentDateTime.LocalTime.Month, 1)
+                .AddDays(-8), timezone);
+            var end = DateTimeZone.FromTimeZone(
+                new DateTime(CurrentDateTime.LocalTime.Year, CurrentDateTime.LocalTime.Month, 
+                    DateTime.DaysInMonth(CurrentDateTime.LocalTime.Year, CurrentDateTime.LocalTime.Month))
+                .AddDays(8), timezone);
 
             Events = new();
             foreach (var calendar in _options.Calendars)
@@ -115,36 +120,46 @@ namespace CalendarDisplay.ViewModels
             var daysInMonth = DateTime.DaysInMonth(date.LocalTime.Year, date.LocalTime.Month);
 
             // We start with some empty days to represent the days at the end of the previous month
-            var lastMonthsDays = Enumerable.Range(0, startingDayOfMonthDayOfWeek)
+            var calendarDays = Enumerable.Range(0, startingDayOfMonthDayOfWeek)
                 .Select(day => new CalendarDay(startingDayOfMonth.AddDays(-(1 + day))))
                 .Reverse()
                 .ToList();
 
-            // Start looping though each day of the month to fetch any events
+            // Add each day of the month
             for (int day = 1; day <= daysInMonth; day++)
             {
                 var thisDay = new DateTime(date.LocalTime.Year, date.LocalTime.Month, day);
-                var daysEvents = eventViewModels.Where(e => e.Start.Date == thisDay).ToList();
-                lastMonthsDays.Add(new CalendarDay(thisDay, daysEvents));
+                calendarDays.Add(new CalendarDay(thisDay));
             }
 
             // Get the days left to add to fill up a full week at the end of the month
-            var daysLeft = 7 - lastMonthsDays.Count() % 7;
+            var daysLeft = 7 - calendarDays.Count() % 7;
             var nextMonthsDays = Enumerable.Range(1, daysLeft)
                 .Select(day => new CalendarDay(new DateTime(date.LocalTime.Year, date.LocalTime.Month + 1, day)))
                 .ToList();
-            lastMonthsDays.AddRange(nextMonthsDays);
+            calendarDays.AddRange(nextMonthsDays);
 
             // Contruct the calendar grid
             List<CalendarWeek> weeks = new();
-            for (int dayIndex = 0, weekIndex = -1; dayIndex < lastMonthsDays.Count(); dayIndex++)
+            for (int dayIndex = 0, weekIndex = -1; dayIndex < calendarDays.Count(); dayIndex++)
             {
                 if (dayIndex % 7 == 0)
                 {
                     weekIndex++;
                     weeks.Add(new CalendarWeek());
                 }
-                weeks[weekIndex].Days.Add(lastMonthsDays[dayIndex]);
+                weeks[weekIndex].Days.Add(calendarDays[dayIndex]);
+            }
+
+            // Loop through each day in the calendar and add any events
+            foreach (var week in weeks)
+            {
+                foreach (var day in week.Days)
+                {
+                    var thisDay = new DateTime(day.Day.Year, day.Day.Month, day.Day.Day);
+                    var daysEvents = eventViewModels.Where(e => e.Start.Date == thisDay).ToList();
+                    day.Events.AddRange(daysEvents);
+                }
             }
 
             return new CalendarGrid() { CalendarWeeks = weeks };
