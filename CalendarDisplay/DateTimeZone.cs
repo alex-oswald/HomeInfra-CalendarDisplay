@@ -29,43 +29,4 @@ namespace CalendarDisplay
             return new DateTimeZone(utcDateTime, timeZone);
         }
     }
-
-    public static class TimeZoneOptionsExtensions
-    {
-        public static TimeZoneInfo FromTimeZoneOptions(this TimeZoneOptions options)
-        {
-            // Windows
-            if (TryFindSystemTimeZoneById(options.WindowsTimeZoneId, out TimeZoneInfo winTimeZoneInfo))
-            {
-                return winTimeZoneInfo;
-            }
-            // Linux
-            else if (TryFindSystemTimeZoneById(options.UnixTimeZoneId, out TimeZoneInfo unixTimeZoneInfo))
-            {
-                return unixTimeZoneInfo;
-            }
-            else
-            {
-                throw new TimeZoneNotFoundException();
-            }
-        }
-
-        /// <summary>
-        /// Tries to find a <see cref="TimeZoneInfo"/> for the specified id.
-        /// An id for one timezone can be different on Windows and Linux.
-        /// </summary>
-        internal static bool TryFindSystemTimeZoneById(string id, out TimeZoneInfo timeZoneInfo)
-        {
-            try
-            {
-                timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(id);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                timeZoneInfo = null;
-                return false;
-            }
-            return true;
-        }
-    }
 }
