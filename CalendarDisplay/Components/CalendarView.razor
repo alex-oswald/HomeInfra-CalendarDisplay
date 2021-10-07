@@ -2,7 +2,7 @@
 @inject ICalendarViewModel viewModel
 
 <div class="calendar-wrapper">
-    <span class="calendar-title">@viewModel.CurrentDateTime.ToString("D")</span>
+    <span class="calendar-title">@viewModel.CurrentDateTime.LocalTime.ToString("dddd, MMMM d, yyyy - h:mm:ss tt - Hmm")</span>
 
     @if (viewModel.Grid is null)
     {
@@ -22,9 +22,9 @@
         {
             @foreach (var day in week.Days)
             {
-                <div class="@(day.Day.Month == viewModel.CurrentDateTime.Month && day.Day.Day == viewModel.CurrentDateTime.Day
+                <div class="@(day.Day.Month == viewModel.CurrentDateTime.LocalTime.Month && day.Day.Day == viewModel.CurrentDateTime.LocalTime.Day
                                 ? "calendar-cell-primary"
-                                : day.Day.Month == viewModel.CurrentDateTime.Month
+                                : day.Day.Month == viewModel.CurrentDateTime.LocalTime.Month
                                     ? "calendar-cell"
                                     : "calendar-cell-secondary")">
 

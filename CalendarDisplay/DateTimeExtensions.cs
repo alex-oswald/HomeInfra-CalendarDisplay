@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CalendarDisplay.Options;
+using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace CalendarDisplay
@@ -23,16 +25,18 @@ namespace CalendarDisplay
             return true;
         }
 
-        public static DateTime FromUtcToPacificStandardTime(this DateTime dateTime)
+        public static DateTime FromUtcTo(this DateTime dateTime, TimeZoneOptions options)
         {
             // Windows
-            if (TryFindSystemTimeZoneById("Pacific Standard Time", out TimeZoneInfo winTimeZoneInfo))
+            if (TryFindSystemTimeZoneById(options.WindowsTimeZoneId, out TimeZoneInfo winTimeZoneInfo))
             {
+                Debug.WriteLine($"Found time zone '{options.WindowsTimeZoneId}'");
                 return TimeZoneInfo.ConvertTimeFromUtc(dateTime, winTimeZoneInfo);
             }
             // Linux
-            else if (TryFindSystemTimeZoneById("America/Los_Angeles", out TimeZoneInfo unixTimeZoneInfo))
+            else if (TryFindSystemTimeZoneById(options.UnixTimeZoneId, out TimeZoneInfo unixTimeZoneInfo))
             {
+                Debug.WriteLine($"Found time zone '{options.UnixTimeZoneId}'");
                 return TimeZoneInfo.ConvertTimeFromUtc(dateTime, unixTimeZoneInfo);
             }
             else

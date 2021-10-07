@@ -1,4 +1,5 @@
-﻿using Microsoft.Graph;
+﻿using CalendarDisplay.Options;
+using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -9,16 +10,16 @@ namespace CalendarDisplay.ViewModels
 {
     public class EventViewModel
     {
-        public EventViewModel(Event e, string backgroundColor, string textColor)
+        public EventViewModel(Event e, string backgroundColor, string textColor, TimeZoneOptions timezoneOptions)
         {
             // All day events dont need the timezone adjustment
             Subject = e.Subject;
             Start = (e.IsAllDay ?? false)
                 ? DateTime.Parse(e.Start.DateTime)
-                : DateTime.Parse(e.Start.DateTime).FromUtcToPacificStandardTime();
+                : DateTime.Parse(e.Start.DateTime).FromUtcTo(timezoneOptions);
             End = (e.IsAllDay ?? false)
                 ? DateTime.Parse(e.End.DateTime)
-                : DateTime.Parse(e.End.DateTime).FromUtcToPacificStandardTime();
+                : DateTime.Parse(e.End.DateTime).FromUtcTo(timezoneOptions);
             AllDay = e.IsAllDay ?? false;
             Recurring = e.Recurrence is not null ? true : false;
             BackgroundColor = backgroundColor;
@@ -68,7 +69,7 @@ namespace CalendarDisplay.ViewModels
 
         public string TextColor { get; }
 
-        public EventViewModel Clone() => new EventViewModel(this);
+        public EventViewModel Clone() => new(this);
 
         public override string ToString()
         {

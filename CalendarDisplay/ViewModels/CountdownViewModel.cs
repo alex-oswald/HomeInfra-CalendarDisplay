@@ -19,15 +19,18 @@ namespace CalendarDisplay.ViewModels
     public class CountdownViewModel : ICountdownViewModel, IDisposable
     {
         private readonly CountdownOptions _options;
+        private readonly TimeZoneOptions _timezoneOptions;
         private readonly ICalendarManager _calendarManager;
         private CancellationTokenSource _cancellationTokenSource;
         private Action _stateChanged;
 
         public CountdownViewModel(
             IOptions<CountdownOptions> options,
+            IOptions<TimeZoneOptions> timezoneOptions,
             ICalendarManager calendarManager)
         {
             _options = options.Value;
+            _timezoneOptions = timezoneOptions.Value;
             _calendarManager = calendarManager;
         }
 
@@ -56,11 +59,13 @@ namespace CalendarDisplay.ViewModels
 
         public async Task UpdateGrid(CancellationToken cancellationToken = default)
         {
-            var start = DateTime.Now;
-            var events = await _calendarManager.GetEventsBetweenDatesAsync(
-                _options.CalendarName, start, start.AddMonths(_options.LookupMonths), cancellationToken);
+            var timezone = _timezoneOptions.FromTimeZoneOptions();
+            var start = DateTimeZone.UtcNow(timezone);
+            var end = DateTimeZone.FromTimeZone(start.LocalTime.AddMonths(_options.LookupMonths), timezone);
 
-            Events = events.Select(e => new CountdownEventViewModel(e))
+            var events = await _calendarManager.GetEventsBetweenDatesAsync(_options.CalendarName, start, end, cancellationToken);
+
+            Events = events.Select(e => new CountdownEventViewModel(e, _timezoneOptions))
                 .OrderBy(e => e.Start)
                 .Take(_options.CountdownsCount)
                 .ToList();
