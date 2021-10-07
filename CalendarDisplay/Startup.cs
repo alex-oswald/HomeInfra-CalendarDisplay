@@ -64,6 +64,7 @@ namespace CalendarDisplay
             services.AddScoped<ITodoViewModel, TodoViewModel>();
             services.AddScoped<ICountdownViewModel, CountdownViewModel>();
 
+            services.Configure<TimeZoneOptions>(Configuration.GetSection(TimeZoneOptions.Section));
             services.Configure<CalendarOptions>(Configuration.GetSection(CalendarOptions.Section));
             services.Configure<TodoListOptions>(Configuration.GetSection(TodoListOptions.Section));
             services.Configure<CountdownOptions>(Configuration.GetSection(CountdownOptions.Section));

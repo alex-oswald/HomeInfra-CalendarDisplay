@@ -54,6 +54,9 @@ html, body {
     grid-gap: 5px;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: 50px 40px auto;
+
+    min-height: 0;
+    min-width: 0;
 }
 
 .calendar-title {
@@ -98,6 +101,9 @@ html, body {
 
 .calendar-cell-inner {
     position: relative;
+
+    overflow: hidden;
+    min-width: 0;
 }
 
 .calendar-sub-cell-day {

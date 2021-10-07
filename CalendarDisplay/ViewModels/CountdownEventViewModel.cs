@@ -1,16 +1,17 @@
-﻿using Microsoft.Graph;
+﻿using CalendarDisplay.Options;
+using Microsoft.Graph;
 using System;
 
 namespace CalendarDisplay.ViewModels
 {
     public class CountdownEventViewModel
     {
-        public CountdownEventViewModel(Event e)
+        public CountdownEventViewModel(Event e, TimeZoneOptions timezoneOptions)
         {
             Subject = e.Subject;
             Start = (e.IsAllDay ?? false)
                 ? DateTime.Parse(e.Start.DateTime)
-                : DateTime.Parse(e.Start.DateTime).FromUtcToPacificStandardTime();
+                : DateTime.Parse(e.Start.DateTime).FromUtcTo(timezoneOptions);
         }
 
         public string Subject { get; }

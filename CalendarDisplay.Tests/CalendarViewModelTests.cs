@@ -13,10 +13,13 @@ namespace CalendarDisplay.Tests
         [Fact]
         public void CreateCalendarTest()
         {
-            var options = new Mock<IOptions<CalendarOptions>>().Object;
+            var calendarOptions = new Mock<IOptions<CalendarOptions>>().Object;
+            var timeZoneOptions = new Mock<IOptions<TimeZoneOptions>>().Object;
             var calendarService = new Mock<ICalendarManager>().Object;
-            var viewModel = new CalendarViewModel(options, calendarService);
-            var grid = viewModel.CreateCalendar(new DateTime(2021, 2, 1), new());
+            var viewModel = new CalendarViewModel(calendarOptions, timeZoneOptions, calendarService);
+            var timeZoneId = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+            var dateTimeZone = DateTimeZone.FromTimeZone(new DateTime(2021, 2, 1), timeZoneId);
+            var grid = viewModel.CreateCalendar(dateTimeZone, new());
 
             Assert.NotNull(grid);
             Assert.Equal(5, grid.CalendarWeeks.Count);
