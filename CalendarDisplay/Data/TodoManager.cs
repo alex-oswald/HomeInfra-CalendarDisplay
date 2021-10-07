@@ -37,14 +37,14 @@ namespace CalendarDisplay.Data
                 _cachedTodoTaskLists = (await _graphServiceClient.Me.Todo.Lists
                     .Request()
                     .GetAsync(cancellationToken)).ToList();
-                _logger.LogInformation("Todo task list cache was empty, fetched {count} lists", _cachedTodoTaskLists.Count());
+                _logger.LogInformation("Todo task list cache was empty, fetched {count} lists", _cachedTodoTaskLists.Count);
             }
 
             // Get the list we want
             var matchedList = _cachedTodoTaskLists.Where(l => l.DisplayName == listName).SingleOrDefault();
             if (matchedList is null)
             {
-                _logger.LogInformation("Unable to find list '{listName}'.", listName);
+                _logger.LogWarning("Unable to find list '{listName}'.", listName);
                 throw new Exception($"Unable to find list '{listName}'.");
             }
 

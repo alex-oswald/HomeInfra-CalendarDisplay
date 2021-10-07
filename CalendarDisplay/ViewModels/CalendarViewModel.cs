@@ -108,6 +108,7 @@ namespace CalendarDisplay.ViewModels
         {
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public CalendarGrid CreateCalendar(DateTimeZone date, EventViewModelList eventViewModels)
@@ -133,7 +134,7 @@ namespace CalendarDisplay.ViewModels
             }
 
             // Get the days left to add to fill up a full week at the end of the month
-            var daysLeft = 7 - calendarDays.Count() % 7;
+            var daysLeft = 7 - calendarDays.Count % 7;
             var nextMonthsDays = Enumerable.Range(1, daysLeft)
                 .Select(day => new CalendarDay(new DateTime(date.LocalTime.Year, date.LocalTime.Month + 1, day)))
                 .ToList();
@@ -141,7 +142,7 @@ namespace CalendarDisplay.ViewModels
 
             // Contruct the calendar grid
             List<CalendarWeek> weeks = new();
-            for (int dayIndex = 0, weekIndex = -1; dayIndex < calendarDays.Count(); dayIndex++)
+            for (int dayIndex = 0, weekIndex = -1; dayIndex < calendarDays.Count; dayIndex++)
             {
                 if (dayIndex % 7 == 0)
                 {

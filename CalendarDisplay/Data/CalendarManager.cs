@@ -37,7 +37,7 @@ namespace CalendarDisplay.Data
                 _cachedCalendars = (await _graphServiceClient.Me.Calendars
                     .Request()
                     .GetAsync(cancellationToken)).ToList();
-                _logger.LogInformation("Calendar cache was empty, fetched {count} calendars", _cachedCalendars.Count());
+                _logger.LogInformation("Calendar cache was empty, fetched {count} calendars", _cachedCalendars.Count);
             }
 
             // Return the calendar id
@@ -52,10 +52,8 @@ namespace CalendarDisplay.Data
             {
                 var calendarId = await GetCalendarIdAsync(calendarName, cancellationToken);
 
-                var sd = new DateTime(start.UniversalTime.Year, start.UniversalTime.Month, start.UniversalTime.Day, 0, 0, 0, DateTimeKind.Utc);
-                var startDate = sd.ToString("o");
-                var ed = new DateTime(end.UniversalTime.Year, end.UniversalTime.Month, end.UniversalTime.Day, 0, 0, 0, DateTimeKind.Utc);
-                var endDate = ed.ToString("o");
+                var startDate = start.UniversalTime.Date.ToString("o");
+                var endDate = end.UniversalTime.Date.ToString("o");
 
                 var queryOptions = new List<QueryOption>()
                 {
