@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CalendarDisplay.Options
+﻿namespace CalendarDisplay.Options
 {
     public class TimeZoneOptions
     {

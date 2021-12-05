@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace CalendarDisplay.Options
+﻿namespace CalendarDisplay.Options
 {
     public class CalendarOptions
     {

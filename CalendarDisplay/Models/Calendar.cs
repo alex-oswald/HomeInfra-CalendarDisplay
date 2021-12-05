@@ -1,6 +1,4 @@
 ﻿using CalendarDisplay.ViewModels;
-using System;
-using System.Collections.Generic;
 
 namespace CalendarDisplay.Models
 {
