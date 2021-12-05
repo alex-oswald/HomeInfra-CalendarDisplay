@@ -136,7 +136,10 @@ namespace CalendarDisplay.ViewModels
             // Get the days left to add to fill up a full week at the end of the month
             var daysLeft = 7 - calendarDays.Count % 7;
             var nextMonthsDays = Enumerable.Range(1, daysLeft)
-                .Select(day => new CalendarDay(new DateTime(date.LocalTime.Year, date.LocalTime.Month + 1, day)))
+                .Select(day => new CalendarDay(new DateTime(
+                    date.LocalTime.Month == 12 ? date.LocalTime.Year + 1 : date.LocalTime.Year,
+                    date.LocalTime.Month == 12 ? 1 : date.LocalTime.Month + 1,
+                    day)))
                 .ToList();
             calendarDays.AddRange(nextMonthsDays);
 
