@@ -1,11 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Graph;
+﻿using Microsoft.Graph;
 using Microsoft.Identity.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CalendarDisplay.Data
 {

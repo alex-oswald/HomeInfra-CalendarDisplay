@@ -1,5 +1,4 @@
 ﻿using CalendarDisplay.Options;
-using System;
 using System.Diagnostics;
 using System.Globalization;
 

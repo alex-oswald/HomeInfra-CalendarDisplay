@@ -1,7 +1,4 @@
-﻿using CalendarDisplay.Options;
-using System;
-
-namespace CalendarDisplay
+﻿namespace CalendarDisplay
 {
     public record DateTimeZone
     {
