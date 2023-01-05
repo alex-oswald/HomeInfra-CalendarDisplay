@@ -32,7 +32,7 @@ html, body {
 
 .grid-body {
     display: grid;
-    grid-template-columns: 80% auto;
+    grid-template-columns: 85% auto;
 }
 
 .grid-cell {
