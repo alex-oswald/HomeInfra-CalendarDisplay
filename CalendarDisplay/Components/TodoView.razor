@@ -18,7 +18,14 @@
                     <ul>
                         @foreach (TodoTask item in todoList.Value)
                         {
-                            <li>@item.Title</li>
+                            if (item.Status == Microsoft.Graph.TaskStatus.Completed)
+                            {
+                                <li><strike>@item.Title</strike></li>
+                            }
+                            else
+                            {
+                                <li>@item.Title</li>
+                            }
                         }
                     </ul>
                 }
