@@ -20,7 +20,7 @@ public class CalendarViewModel : ICalendarViewModel, IDisposable
 {
     private readonly CalendarOptions _options;
     private readonly TimeZoneOptions _timezoneOptions;
-    private readonly EventOrganizerOptions _eventOrganizerOptions;
+    private readonly CategoryStyleOptions _categoryStyleOptions;
     private readonly ICalendarManager _calendarManager;
     private CancellationTokenSource _cancellationTokenSource;
     private Action _stateChanged;
@@ -28,12 +28,12 @@ public class CalendarViewModel : ICalendarViewModel, IDisposable
     public CalendarViewModel(
         IOptions<CalendarOptions> options,
         IOptions<TimeZoneOptions> timezoneOptions,
-        IOptions<EventOrganizerOptions> eventOrganizerOptions,
+        IOptions<CategoryStyleOptions> categoryStyleOptions,
         ICalendarManager calendarManager)
     {
         _options = options.Value;
         _timezoneOptions = timezoneOptions.Value;
-        _eventOrganizerOptions = eventOrganizerOptions.Value;
+        _categoryStyleOptions = categoryStyleOptions.Value;
         _calendarManager = calendarManager;
     }
 
@@ -97,16 +97,20 @@ public class CalendarViewModel : ICalendarViewModel, IDisposable
             var events = graphEvents
                 .Select(e =>
                 {
-                    // Is the organizers email in options?
-                    var organizerMatch = _eventOrganizerOptions.Organizers.Where(o => o.OrganizerEmail == e.Organizer.EmailAddress.Address).FirstOrDefault();
-                    if (organizerMatch is not null)
+                    // We can only style based on one category, and that will be the first alphabetically.
+                    var category = e.Categories.OrderBy(o => o).FirstOrDefault();
+                    if (category is not null)
                     {
-                        return new EventViewModel(e, organizerMatch.BackgroundColor, organizerMatch.TextColor, _timezoneOptions);
+                        // Check if we have a style for the first category of the event
+                        var match = _categoryStyleOptions.Categories.Where(o => o.CategoryName == category).FirstOrDefault();
+                        if (match is not null)
+                        {
+                            // Use the style config
+                            return new EventViewModel(e, match.BackgroundColor, match.TextColor, _timezoneOptions);
+                        }
                     }
-                    else
-                    {
-                        return new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor, _timezoneOptions);
-                    }
+                    // Default calendar color
+                    return new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor, _timezoneOptions);
                 })
                 .ToEventViewModelList()
                 .ExpandMultiDayEvent();
