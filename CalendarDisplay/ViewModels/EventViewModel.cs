@@ -8,24 +8,26 @@ namespace CalendarDisplay.ViewModels;
 
 public class EventViewModel
 {
-    public EventViewModel(Event e, string backgroundColor, string textColor, TimeZoneOptions timezoneOptions)
+    public EventViewModel(Event @event, string backgroundColor, string textColor, TimeZoneOptions timezoneOptions)
     {
         // All day events dont need the timezone adjustment
-        Subject = e.Subject;
-        Start = (e.IsAllDay ?? false)
-            ? DateTime.Parse(e.Start.DateTime)
-            : DateTime.Parse(e.Start.DateTime).FromUtcTo(timezoneOptions);
-        End = (e.IsAllDay ?? false)
-            ? DateTime.Parse(e.End.DateTime)
-            : DateTime.Parse(e.End.DateTime).FromUtcTo(timezoneOptions);
-        AllDay = e.IsAllDay ?? false;
-        Recurring = e.Recurrence is not null ? true : false;
+        OrganizerEmail = @event.Organizer.EmailAddress.Address;
+        Subject = @event.Subject;
+        Start = (@event.IsAllDay ?? false)
+            ? DateTime.Parse(@event.Start.DateTime)
+            : DateTime.Parse(@event.Start.DateTime).FromUtcTo(timezoneOptions);
+        End = (@event.IsAllDay ?? false)
+            ? DateTime.Parse(@event.End.DateTime)
+            : DateTime.Parse(@event.End.DateTime).FromUtcTo(timezoneOptions);
+        AllDay = @event.IsAllDay ?? false;
+        Recurring = @event.Recurrence is not null ? true : false;
         BackgroundColor = backgroundColor;
         TextColor = textColor;
     }
 
     public EventViewModel(EventViewModel vm)
     {
+        OrganizerEmail = vm.OrganizerEmail;
         Subject = vm.Subject;
         Start = vm.Start;
         End = vm.End;
@@ -36,6 +38,7 @@ public class EventViewModel
     }
 
     internal EventViewModel(
+        string organizerEmail,
         string subject,
         DateTime start,
         DateTime end,
@@ -44,6 +47,7 @@ public class EventViewModel
         string backgroundColor,
         string textColor)
     {
+        OrganizerEmail = organizerEmail;
         Subject = subject;
         Start = start;
         End = end;
@@ -52,6 +56,8 @@ public class EventViewModel
         BackgroundColor = backgroundColor;
         TextColor = textColor;
     }
+
+    public string OrganizerEmail { get; }
 
     public string Subject { get; }
 
@@ -100,7 +106,7 @@ public static class EventViewModelExtensions
                     t = t.AddDays(1);
                     if (t != item.End) // Only add if we aren't at the end
                     {
-                        var dup = new EventViewModel(item.Subject, t, item.End, item.AllDay, item.Recurring, item.BackgroundColor, item.TextColor);
+                        var dup = new EventViewModel(item.OrganizerEmail, item.Subject, t, item.End, item.AllDay, item.Recurring, item.BackgroundColor, item.TextColor);
                         expandedList.Add(dup);
                     }
                 }

@@ -63,6 +63,7 @@ public class Startup
         services.Configure<CalendarOptions>(Configuration.GetSection(CalendarOptions.Section));
         services.Configure<TodoListOptions>(Configuration.GetSection(TodoListOptions.Section));
         services.Configure<CountdownOptions>(Configuration.GetSection(CountdownOptions.Section));
+        services.Configure<EventOrganizerOptions>(Configuration.GetSection(EventOrganizerOptions.Section));
 
         // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-5.0
         services.Configure<ForwardedHeadersOptions>(options =>

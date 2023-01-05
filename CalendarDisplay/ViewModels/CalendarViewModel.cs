@@ -20,6 +20,7 @@ public class CalendarViewModel : ICalendarViewModel, IDisposable
 {
     private readonly CalendarOptions _options;
     private readonly TimeZoneOptions _timezoneOptions;
+    private readonly EventOrganizerOptions _eventOrganizerOptions;
     private readonly ICalendarManager _calendarManager;
     private CancellationTokenSource _cancellationTokenSource;
     private Action _stateChanged;
@@ -27,10 +28,12 @@ public class CalendarViewModel : ICalendarViewModel, IDisposable
     public CalendarViewModel(
         IOptions<CalendarOptions> options,
         IOptions<TimeZoneOptions> timezoneOptions,
+        IOptions<EventOrganizerOptions> eventOrganizerOptions,
         ICalendarManager calendarManager)
     {
         _options = options.Value;
         _timezoneOptions = timezoneOptions.Value;
+        _eventOrganizerOptions = eventOrganizerOptions.Value;
         _calendarManager = calendarManager;
     }
 
@@ -89,10 +92,25 @@ public class CalendarViewModel : ICalendarViewModel, IDisposable
         Events = new();
         foreach (var calendar in _options.Calendars)
         {
-            var events = (await _calendarManager.GetEventsBetweenDatesAsync(calendar.Name, start, end, cancellationToken))
-                .Select(e => new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor, _timezoneOptions))
+            var graphEvents = await _calendarManager.GetEventsBetweenDatesAsync(calendar.Name, start, end, cancellationToken);
+
+            var events = graphEvents
+                .Select(e =>
+                {
+                    // Is the organizers email in options?
+                    var organizerMatch = _eventOrganizerOptions.Organizers.Where(o => o.OrganizerEmail == e.Organizer.EmailAddress.Address).FirstOrDefault();
+                    if (organizerMatch is not null)
+                    {
+                        return new EventViewModel(e, organizerMatch.BackgroundColor, organizerMatch.TextColor, _timezoneOptions);
+                    }
+                    else
+                    {
+                        return new EventViewModel(e, calendar.BackgroundColor, calendar.TextColor, _timezoneOptions);
+                    }
+                })
                 .ToEventViewModelList()
                 .ExpandMultiDayEvent();
+
             Events.AddRange(events);
         }
 

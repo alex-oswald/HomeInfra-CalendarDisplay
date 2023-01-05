@@ -12,6 +12,8 @@ public class CalendarOptions
     {
         public string Name { get; set; }
 
+        public string OrganizerEmail { get; set; }
+
         public string BackgroundColor { get; set; }
 
         public string TextColor { get; set; }
