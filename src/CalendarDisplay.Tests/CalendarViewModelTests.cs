@@ -15,7 +15,7 @@ public class CalendarViewModelTests
     {
         var calendarOptions = new Mock<IOptions<CalendarOptions>>().Object;
         var timeZoneOptions = new Mock<IOptions<TimeZoneOptions>>().Object;
-        var eventOrganizerOptions = new Mock<IOptions<EventOrganizerOptions>>().Object;
+        var eventOrganizerOptions = new Mock<IOptions<CategoryStyleOptions>>().Object;
         var calendarService = new Mock<ICalendarManager>().Object;
         var viewModel = new CalendarViewModel(calendarOptions, timeZoneOptions, eventOrganizerOptions, calendarService);
         var timeZoneId = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
