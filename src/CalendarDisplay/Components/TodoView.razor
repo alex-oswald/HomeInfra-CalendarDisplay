@@ -1,0 +1,43 @@
+﻿@namespace CalendarDisplay.Components
+@inject ITodoViewModel viewModel
+
+<div class="todo-wrapper">
+
+    @foreach (var todoList in viewModel.Lists)
+    {
+        <div class="todo-list">
+            <div class="todo-list-inner">
+                <div>@todoList.Key</div>
+
+                @if (todoList.Value is null || todoList.Value?.Count() == 0)
+                {
+                    <p>No items</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (TodoTask item in todoList.Value)
+                        {
+                            if (item.Status == Microsoft.Graph.TaskStatus.Completed)
+                            {
+                                <li><strike>@item.Title</strike></li>
+                            }
+                            else
+                            {
+                                <li>@item.Title</li>
+                            }
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {      
+    protected override async Task OnInitializedAsync()
+    {
+        await viewModel.InitAsync(StateHasChanged);
+    }
+}
