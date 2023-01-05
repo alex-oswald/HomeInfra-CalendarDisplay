@@ -1,22 +1,13 @@
-﻿#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
-WORKDIR /app
+﻿
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-COPY ["CalendarDisplay/CalendarDisplay.csproj", "CalendarDisplay/"]
-RUN dotnet restore "CalendarDisplay/CalendarDisplay.csproj"
-COPY . .
-WORKDIR "/src/CalendarDisplay"
-RUN dotnet build "CalendarDisplay.csproj" -c Release -o /app/build
+WORKDIR /app
+COPY . ./
+RUN dotnet publish "CalendarDisplay.csproj" -c Release -o /publish
 
-FROM build AS publish
-RUN dotnet publish "CalendarDisplay.csproj" -c Release -o /app/publish
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "CalendarDisplay.dll"]

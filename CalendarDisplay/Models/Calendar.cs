@@ -1,33 +1,32 @@
 ﻿using CalendarDisplay.ViewModels;
 
-namespace CalendarDisplay.Models
+namespace CalendarDisplay.Models;
+
+public record CalendarDay
 {
-    public record CalendarDay
+    public CalendarDay(DateTime day)
+        : this(day, new())
     {
-        public CalendarDay(DateTime day)
-            : this(day, new())
-        {
-            Day = day;
-        }
-
-        public CalendarDay(DateTime day, List<EventViewModel> events)
-        {
-            Day = day;
-            Events = events;
-        }
-
-        public DateTime Day { get; }
-
-        public List<EventViewModel> Events { get; }
+        Day = day;
     }
 
-    public class CalendarWeek
+    public CalendarDay(DateTime day, List<EventViewModel> events)
     {
-        public List<CalendarDay> Days { get; set; } = new();
+        Day = day;
+        Events = events;
     }
 
-    public class CalendarGrid
-    {
-        public List<CalendarWeek> CalendarWeeks { get; set; } = new();
-    }
+    public DateTime Day { get; }
+
+    public List<EventViewModel> Events { get; }
+}
+
+public class CalendarWeek
+{
+    public List<CalendarDay> Days { get; set; } = new();
+}
+
+public class CalendarGrid
+{
+    public List<CalendarWeek> CalendarWeeks { get; set; } = new();
 }

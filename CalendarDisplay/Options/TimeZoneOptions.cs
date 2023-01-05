@@ -1,46 +1,45 @@
-﻿namespace CalendarDisplay.Options
+﻿namespace CalendarDisplay.Options;
+
+public class TimeZoneOptions
 {
-    public class TimeZoneOptions
+    public const string Section = "TimeZoneOptions";
+
+    public string WindowsTimeZoneId { get; set; }
+
+    public string UnixTimeZoneId { get; set; }
+}
+
+public static class TimeZoneOptionsExtensions
+{
+    public static TimeZoneInfo FromTimeZoneOptions(this TimeZoneOptions options)
     {
-        public const string Section = "TimeZoneOptions";
-
-        public string WindowsTimeZoneId { get; set; }
-
-        public string UnixTimeZoneId { get; set; }
+        // Windows
+        if (TryFindSystemTimeZoneById(options.WindowsTimeZoneId, out TimeZoneInfo winTimeZoneInfo))
+        {
+            return winTimeZoneInfo;
+        }
+        // Linux
+        else if (TryFindSystemTimeZoneById(options.UnixTimeZoneId, out TimeZoneInfo unixTimeZoneInfo))
+        {
+            return unixTimeZoneInfo;
+        }
+        else
+        {
+            throw new TimeZoneNotFoundException();
+        }
     }
 
-    public static class TimeZoneOptionsExtensions
+    internal static bool TryFindSystemTimeZoneById(string id, out TimeZoneInfo timeZoneInfo)
     {
-        public static TimeZoneInfo FromTimeZoneOptions(this TimeZoneOptions options)
+        try
         {
-            // Windows
-            if (TryFindSystemTimeZoneById(options.WindowsTimeZoneId, out TimeZoneInfo winTimeZoneInfo))
-            {
-                return winTimeZoneInfo;
-            }
-            // Linux
-            else if (TryFindSystemTimeZoneById(options.UnixTimeZoneId, out TimeZoneInfo unixTimeZoneInfo))
-            {
-                return unixTimeZoneInfo;
-            }
-            else
-            {
-                throw new TimeZoneNotFoundException();
-            }
+            timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(id);
         }
-
-        internal static bool TryFindSystemTimeZoneById(string id, out TimeZoneInfo timeZoneInfo)
+        catch (TimeZoneNotFoundException)
         {
-            try
-            {
-                timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(id);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                timeZoneInfo = null;
-                return false;
-            }
-            return true;
+            timeZoneInfo = null;
+            return false;
         }
+        return true;
     }
 }
